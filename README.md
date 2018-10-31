@@ -8,7 +8,7 @@ Slack の Outgoing Webhooksを利用したスプラトゥーン2のステージ�
 ### 使い方
 ```
 $ git clone [URL]
-$ pip install -r requirements.txt`
+$ pip install -r requirements.txt
 ```
 
 1. プロジェクトをzip圧縮してLambdaにデプロイ
