@@ -2,30 +2,50 @@ import requests
 import os
 from datetime import datetime
 
+# スプラトゥーン2のステージ情報を提供しているAPI
 URL = 'https://spla2.yuu26.com/'
 
 
 def get_schedule(body, query):
-    resp = requests.get(URL + query + '/schedule')
-    results = resp.json()['result']
+    """
+    ステージAPIにアクセスしてルール・ステージ情報を成形するメソッド
+    :param body: Slack で応答させるメッセージ
+    :param query: gachi / league / regular のいずれか
+    :return: 成形したメッセージ
+    """
 
-    for i, result in enumerate(results):
-        body += '```'
-        body += '開始日時：' + str(datetime.strptime(result['start'], '%Y-%m-%dT%H:%M:%S').strftime('%Y年%m月%d日%H時%M分～')) + '\n'
-        body += 'ルール　：' + result['rule_ex']['name'] + '\n'
-        body += 'ステージ：' + result['maps_ex'][0]['name'] + ' と ' + result['maps_ex'][1]['name'] + '\n'
-        body += '```'
-        body += '\n'
-        if i == 2:
-            break
+    try:
+        resp = requests.get(URL + query + '/schedule')
+
+        if resp.status_code == 200:
+            results = resp.json()['result']
+
+            for i, result in enumerate(results):
+                body += '```'
+                body += '開始日時：' + str(
+                    datetime.strptime(result['start'], '%Y-%m-%dT%H:%M:%S').strftime('%Y年%m月%d日%H時%M分～')) + '\n'
+                body += 'ルール　：' + result['rule_ex']['name'] + '\n'
+                body += 'ステージ：' + result['maps_ex'][0]['name'] + ' と ' + result['maps_ex'][1]['name'] + '\n'
+                body += '```'
+                body += '\n'
+                if i == 2:
+                    break
+        else:
+            body = 'ステージAPIへのアクセスに失敗しました。\n' \
+                   '時間をおいて再度試してください。'
+
+    except requests.exceptions.RequestException as e:
+        body = 'ステージAPIへのアクセス時に例外が発生しました。\n' \
+               '時間をおいて再度試してください。'
 
     return body
 
 
 def lambda_handler(event, context):
-    # TODO implement
     token = os.environ['TOKEN']
 
+    # Outgoing Webhooks のトークンを参照し、
+    # 想定している Slack チームからのアクセスかを判別する
     if event['token'] != token:
         return {
             'statusCode': 200,
