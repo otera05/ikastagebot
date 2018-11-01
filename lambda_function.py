@@ -5,6 +5,11 @@ from datetime import datetime
 # スプラトゥーン2のステージ情報を提供しているAPI
 URL = 'https://spla2.yuu26.com/'
 
+# ヘッダーで User Agent を明記する
+HEADERS = {
+    'User-Agent': 'ikastagebot(Twitter@otera05)'
+}
+
 
 def get_schedule(body, query):
     """
@@ -15,7 +20,7 @@ def get_schedule(body, query):
     """
 
     try:
-        resp = requests.get(URL + query + '/schedule')
+        resp = requests.get(URL + query + '/schedule', headers=HEADERS)
 
         if resp.status_code == 200:
             results = resp.json()['result']
