@@ -7,7 +7,7 @@ Slack の Outgoing Webhooksを利用したスプラトゥーン2のステージ�
 
 ### 使い方
 ```
-$ git clone [URL]
+$ git clone https://github.com/otera05/ikastagebot
 $ pip install -r requirements.txt
 ```
 
